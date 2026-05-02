@@ -1,0 +1,14 @@
+{
+  "name": "AeroFuel — Gestão de Abastecimento",
+  "short_name": "AeroFuel",
+  "description": "Sistema de agendamento de abastecimento de aeronaves",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0A0C0F",
+  "theme_color": "#0A0C0F",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
