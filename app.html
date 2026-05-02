@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="AeroFuel"/>
+  <meta name="mobile-web-app-capable" content="yes"/>
+  <meta name="theme-color" content="#0A0C0F"/>
+  <link rel="manifest" href="manifest.json"/>
+  <link rel="apple-touch-icon" href="icons/icon-192.png"/>
+  <title>AeroFuel — Sistema de Abastecimento</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    /* ══════════════════════════════════════════════════════
+       AEROFUEL — DESIGN SYSTEM (inline, completo)
+    ══════════════════════════════════════════════════════ */
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+    :root{
+      --ink:#0A0C0F;--ink-90:#111317;--ink-80:#1A1D23;--ink-70:#232830;--ink-60:#2E3440;
+      --steel-40:#3E4556;--steel-30:#566070;--steel-20:#7A8494;--steel-10:#A8B2BF;--steel-05:#D4D9E0;
+      --fog:#EDEEF0;--white:#F8F9FB;
+      --amber:#E8A020;--amber-dim:#C4861A;--amber-glow:rgba(232,160,32,.14);--amber-line:rgba(232,160,32,.3);
+      --ok:#2A9D5C;--ok-bg:rgba(42,157,92,.12);--warn:#D97706;--warn-bg:rgba(217,119,6,.12);
+      --err:#DC3545;--err-bg:rgba(220,53,69,.12);--info:#3B82F6;--info-bg:rgba(59,130,246,.12);
+      --safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px);
+      --r:8px;--rlg:14px;--rsm:4px;
+      --fh:'Syne',sans-serif;--fd:'DM Mono',monospace;--fb:'DM Sans',sans-serif;
+    }
+    html,body{height:100%;overflow:hidden;background:var(--ink);color:var(--white);font-family:var(--fb);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+    #app{display:flex;flex-direction:column;height:100dvh;max-width:430px;margin:0 auto;background:var(--ink);position:relative;overflow:hidden}
+    .screen{display:none;flex-direction:column;flex:1;overflow:hidden}
+    .screen.active{display:flex}
+    .scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+    .scroll::-webkit-scrollbar{display:none}
+    .pad{padding:14px 16px 24px}
+
+    /* ── Topbar ── */
+    .topbar{background:var(--ink-90);border-bottom:1px solid var(--ink-60);padding:calc(var(--safe-top) + 12px) 16px 14px;display:flex;align-items:center;gap:12px;flex-shrink:0;position:relative}
+    .topbar::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,var(--amber-line),transparent 60%)}
+    .tb-title{font-family:var(--fh);font-size:17px;font-weight:700;color:var(--white);flex:1;letter-spacing:-.01em}
+    .tb-sub{font-family:var(--fd);font-size:10px;color:var(--steel-20);margin-top:1px;letter-spacing:.04em;text-transform:uppercase}
+    .tb-back{width:34px;height:34px;border-radius:var(--r);background:var(--ink-70);border:1px solid var(--ink-60);color:var(--steel-10);font-size:16px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+    .tb-btn{background:var(--amber-glow);border:1px solid var(--amber-line);color:var(--amber);border-radius:var(--rsm);padding:6px 12px;font-family:var(--fd);font-size:10px;font-weight:500;cursor:pointer;letter-spacing:.06em}
+
+    /* ── Tab bar ── */
+    .tabbar{display:flex;background:var(--ink-90);border-top:1px solid var(--ink-60);padding-bottom:var(--safe-bottom);flex-shrink:0}
+    .tab{flex:1;display:flex;flex-direction:column;align-items:center;padding:9px 4px 10px;gap:3px;border:none;background:none;color:var(--steel-40);font-size:10px;font-family:var(--fb);cursor:pointer;letter-spacing:.02em;transition:color .15s}
+    .tab.active{color:var(--amber)}
+    .tab svg{width:20px;height:20px;stroke-width:1.6;stroke:currentColor;fill:none}
+
+    /* ── Buttons ── */
+    .btn{display:flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:var(--r);font-family:var(--fb);font-size:14px;font-weight:600;cursor:pointer;transition:all .15s;padding:13px 20px;width:100%;letter-spacing:.01em}
+    .btn:active{transform:scale(.98)}
+    .btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+    .btn-amber{background:var(--amber);color:var(--ink)}
+    .btn-ghost{background:var(--ink-70);color:var(--steel-10);border:1px solid var(--ink-60)}
+    .btn-outline{background:transparent;color:var(--amber);border:1px solid var(--amber-line)}
+    .btn-danger{background:var(--err-bg);color:#F87171;border:1px solid rgba(220,53,69,.25)}
+    .btn-sm{font-size:13px;padding:9px 14px;border-radius:var(--rsm)}
+    .btn-row{display:flex;gap:8px}
+    .btn-row .btn{flex:1}
+
+    /* ── Cards ── */
+    .card{background:var(--ink-80);border:1px solid var(--ink-60);border-radius:var(--rlg);padding:16px;margin-bottom:10px;position:relative;overflow:hidden}
+    .card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,var(--amber-line) 0%,transparent 70%)}
+    .card-row{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+    .card-title{font-family:var(--fd);font-size:13px;font-weight:500;color:var(--white);letter-spacing:.02em}
+    .card-sub{font-size:12px;color:var(--steel-20);margin-top:3px;line-height:1.4}
+    .divider{height:1px;background:var(--ink-60);margin:12px 0}
+
+    /* ── Badges ── */
+    .badge{display:inline-flex;align-items:center;gap:4px;font-family:var(--fd);font-size:10px;font-weight:500;padding:3px 7px;border-radius:var(--rsm);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+    .badge::before{content:'';width:5px;height:5px;border-radius:50%;flex-shrink:0}
+    .badge-ok{background:var(--ok-bg);color:#4ADE80}.badge-ok::before{background:#4ADE80}
+    .badge-warn{background:var(--warn-bg);color:#FBB040}.badge-warn::before{background:#FBB040}
+    .badge-err{background:var(--err-bg);color:#F87171}.badge-err::before{background:#F87171}
+    .badge-info{background:var(--info-bg);color:#93C5FD}.badge-info::before{background:#93C5FD}
+    .badge-mute{background:var(--ink-70);color:var(--steel-20)}.badge-mute::before{background:var(--steel-30)}
+
+    /* ── Forms ── */
+    .fg{margin-bottom:14px}
+    .fl{display:block;font-family:var(--fd);font-size:10px;font-weight:500;color:var(--steel-20);margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em}
+    .fi,.fsel,.fta{width:100%;padding:12px 14px;font-size:14px;font-family:var(--fb);background:var(--ink-80);border:1px solid var(--ink-60);border-radius:var(--r);color:var(--white);outline:none;-webkit-appearance:none;appearance:none;transition:border-color .2s,box-shadow .2s}
+    .fi::placeholder,.fta::placeholder{color:var(--steel-40)}
+    .fi:focus,.fsel:focus,.fta:focus{border-color:var(--amber-dim);box-shadow:0 0 0 3px var(--amber-glow)}
+    .fi.err,.fsel.err{border-color:var(--err)}
+    .fsel option{background:var(--ink-80);color:var(--white)}
+    .fta{resize:none;height:80px}
+    .frow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .ferr{font-size:11px;color:#F87171;margin-top:4px;display:none}
+    .ferr.show{display:block}
+    .fhint{font-size:11px;color:var(--steel-30);margin-top:4px}
+
+    /* ── Section label ── */
+    .slabel{font-family:var(--fd);font-size:10px;font-weight:500;color:var(--steel-30);letter-spacing:.1em;text-transform:uppercase;margin:20px 0 10px;display:flex;align-items:center;gap:10px}
+    .slabel::after{content:'';flex:1;height:1px;background:var(--ink-60)}
+    .slabel:first-child{margin-top:4px}
+
+    /* ── Empty ── */
+    .empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 24px;text-align:center;gap:8px}
+    .empty svg{width:48px;height:48px;opacity:.2;margin-bottom:4px;stroke:var(--steel-10);fill:none;stroke-width:1.2}
+    .empty-title{font-family:var(--fh);font-size:15px;color:var(--steel-20)}
+    .empty-sub{font-size:13px;color:var(--steel-30)}
+
+    /* ── Modal ── */
+    .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:80;align-items:flex-end;justify-content:center}
+    .modal-bg.show{display:flex}
+    .sheet{background:var(--ink-80);border:1px solid var(--ink-60);border-radius:var(--rlg) var(--rlg) 0 0;padding:20px 16px;padding-bottom:calc(20px + var(--safe-bottom));width:100%;max-width:430px;position:relative}
+    .sheet-handle{width:36px;height:3px;background:var(--ink-60);border-radius:2px;margin:0 auto 18px}
+    .sheet-title{font-family:var(--fh);font-size:17px;font-weight:700;margin-bottom:14px}
+
+    /* ── Overlay ── */
+    .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:100;align-items:center;justify-content:center;padding:24px}
+    .overlay.show{display:flex}
+    .ovcard{background:var(--ink-80);border:1px solid var(--ink-60);border-radius:var(--rlg);padding:32px 24px;text-align:center;max-width:320px;width:100%;position:relative}
+    .ovcard::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--amber),transparent);border-radius:var(--rlg) var(--rlg) 0 0}
+    .ov-icon{font-size:48px;margin-bottom:14px}
+    .ov-title{font-family:var(--fh);font-size:20px;font-weight:700;color:var(--white);margin-bottom:8px}
+    .ov-sub{font-size:13px;color:var(--steel-20);margin-bottom:22px;line-height:1.6}
+
+    /* ── Splash ── */
+    #screen-splash{background:var(--ink);align-items:center;justify-content:center;gap:0}
+    .sp-mark{width:64px;height:64px;border:1.5px solid var(--amber);border-radius:var(--r);display:flex;align-items:center;justify-content:center;margin-bottom:24px;animation:mIn .55s ease both}
+    .sp-mark svg{width:34px;height:34px;stroke:var(--amber);fill:none;stroke-width:1.4}
+    @keyframes mIn{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:scale(1)}}
+    .sp-name{font-family:var(--fh);font-size:28px;font-weight:800;color:var(--white);letter-spacing:-.02em;animation:fUp .5s .2s ease both}
+    .sp-tag{font-family:var(--fd);font-size:10px;color:var(--steel-30);letter-spacing:.14em;text-transform:uppercase;margin-top:5px;animation:fUp .5s .35s ease both}
+    .sp-bar{width:120px;height:2px;background:var(--ink-60);border-radius:1px;margin-top:44px;overflow:hidden;animation:fUp .4s .5s ease both}
+    .sp-fill{height:100%;background:var(--amber);border-radius:1px;animation:lBar 1.5s .6s ease forwards;width:0}
+    @keyframes lBar{to{width:100%}}
+    @keyframes fUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+    /* ── Login Select ── */
+    #screen-login-select{background:var(--ink);justify-content:flex-end}
+    .ls-hero{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;gap:0}
+    .ls-mark{width:72px;height:72px;border:1.5px solid var(--amber);border-radius:var(--rlg);display:flex;align-items:center;justify-content:center;margin-bottom:20px}
+    .ls-mark svg{width:38px;height:38px;stroke:var(--amber);fill:none;stroke-width:1.3}
+    .ls-brand{font-family:var(--fh);font-size:30px;font-weight:800;color:var(--white);letter-spacing:-.02em}
+    .ls-tagline{font-family:var(--fd);font-size:10px;color:var(--steel-30);letter-spacing:.12em;text-transform:uppercase;margin-top:6px}
+    .ls-card{background:var(--ink-90);border:1px solid var(--ink-60);border-radius:var(--rlg) var(--rlg) 0 0;padding:28px 20px;padding-bottom:calc(28px + var(--safe-bottom))}
+    .ls-card-title{font-family:var(--fh);font-size:18px;font-weight:700;margin-bottom:6px}
+    .ls-card-sub{font-size:13px;color:var(--steel-20);margin-bottom:22px;line-height:1.5}
+    .ls-option{display:flex;align-items:center;gap:14px;background:var(--ink-80);border:1px solid var(--ink-60);border-radius:var(--r);padding:16px;margin-bottom:10px;cursor:pointer;transition:border-color .15s}
+    .ls-option:active{border-color:var(--amber-dim)}
+    .ls-opt-icon{width:44px;height:44px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .ls-opt-icon svg{width:22px;height:22px;stroke-width:1.4;fill:none}
+    .ls-option-pilot .ls-opt-icon{background:var(--amber-glow);border:1px solid var(--amber-line)}
+    .ls-option-pilot .ls-opt-icon svg{stroke:var(--amber)}
+    .ls-option-admin .ls-opt-icon{background:var(--info-bg);border:1px solid rgba(59,130,246,.2)}
+    .ls-option-admin .ls-opt-icon svg{stroke:#93C5FD}
+    .ls-opt-title{font-family:var(--fh);font-size:15px;font-weight:700}
+    .ls-opt-sub{font-size:12px;color:var(--steel-20);margin-top:2px}
+    .ls-opt-arrow{margin-left:auto;color:var(--steel-30);font-size:18px}
+
+    /* ── Login Pilot ── */
+    #screen-login-pilot{background:var(--ink)}
+    .lp-header{background:var(--ink-90);border-bottom:1px solid var(--ink-60);padding:calc(var(--safe-top) + 12px) 16px 14px;display:flex;align-items:center;gap:12px;flex-shrink:0}
+    .lp-header-title{font-family:var(--fh);font-size:17px;font-weight:700;color:var(--white);flex:1}
+    .lp-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+    .lp-pad{padding:20px 16px 32px}
+    .lp-intro{font-size:13px;color:var(--steel-20);margin-bottom:22px;line-height:1.6}
+    .lp-intro strong{color:var(--steel-10)}
+
+    /* ── Login Admin ── */
+    #screen-login-admin{background:var(--ink)}
+    .la-badge{display:inline-flex;align-items:center;gap:6px;background:var(--info-bg);border:1px solid rgba(59,130,246,.2);color:#93C5FD;border-radius:var(--rsm);padding:5px 10px;font-family:var(--fd);font-size:10px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;margin-bottom:18px}
+    .la-alert{background:var(--warn-bg);border:1px solid rgba(217,119,6,.2);border-radius:var(--r);padding:12px 14px;font-size:12px;color:#FBB040;line-height:1.5;margin-bottom:18px}
+
+    /* ── Step bar ── */
+    .stepbar{display:flex;gap:4px;margin-bottom:8px}
+    .seg{flex:1;height:2px;border-radius:1px;background:var(--ink-60);transition:background .3s}
+    .seg.done{background:var(--amber)}
+
+    /* ── Inner tabs ── */
+    .itabs{display:flex;border-bottom:1px solid var(--ink-60);background:var(--ink-90);flex-shrink:0}
+    .itab{flex:1;padding:12px 4px;font-size:12px;font-weight:500;font-family:var(--fb);text-align:center;border:none;background:none;color:var(--steel-30);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .2s;letter-spacing:.02em}
+    .itab.active{color:var(--amber);border-bottom-color:var(--amber)}
+
+    /* ── Slot grid ── */
+    .slotgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}
+    .slot{padding:9px 4px;border-radius:var(--rsm);font-family:var(--fd);font-size:11px;font-weight:500;text-align:center;border:1px solid var(--ink-60);cursor:pointer;background:var(--ink-80);color:var(--steel-20);transition:all .12s}
+    .slot.av{border-color:rgba(42,157,92,.4);color:#4ADE80;background:rgba(42,157,92,.08)}
+    .slot.few{border-color:rgba(217,119,6,.4);color:#FBB040;background:rgba(217,119,6,.08)}
+    .slot.full{border-color:var(--ink-60);color:var(--steel-40);background:var(--ink-90);text-decoration:line-through;cursor:not-allowed}
+    .slot.sel{border-color:var(--amber);background:var(--amber-glow);color:var(--amber)}
+
+    /* ── Qty slider ── */
+    .qtyrow{display:flex;align-items:center;gap:10px}
+    input[type=range]{width:100%;accent-color:var(--amber);height:3px;flex:1;cursor:pointer}
+    .qtydsp{background:var(--amber-glow);border:1px solid var(--amber-line);color:var(--amber);border-radius:var(--rsm);padding:6px 10px;font-family:var(--fd);font-size:12px;white-space:nowrap;flex-shrink:0}
+
+    /* ── Summary ── */
+    .sumbox{background:var(--ink-90);border:1px solid var(--ink-60);border-radius:var(--rlg);padding:16px;margin-bottom:12px}
+    .sumbox-hd{font-family:var(--fd);font-size:10px;font-weight:500;color:var(--amber);text-transform:uppercase;letter-spacing:.1em;margin-bottom:14px}
+    .sumrow{display:flex;justify-content:space-between;margin-bottom:8px}
+    .sumkey{font-size:12px;color:var(--steel-20)}
+    .sumval{font-size:12px;font-weight:600;color:var(--white);text-align:right;max-width:60%}
+    .sumtotal{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--ink-60);padding-top:12px;margin-top:8px}
+    .sumtotal-lbl{font-family:var(--fh);font-size:14px;font-weight:600}
+    .sumtotal-val{font-family:var(--fd);font-size:22px;color:var(--amber)}
+
+    /* ── Checkbox ── */
+    .chkrow{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+    .chkrow input[type=checkbox]{width:16px;height:16px;accent-color:var(--amber);flex-shrink:0;cursor:pointer}
+    .chkrow label{font-size:13px;color:var(--steel-10);cursor:pointer}
+    .chkrow a{color:var(--amber);text-decoration:none}
+
+    /* ── Week strip ── */
+    .weekstrip{display:flex;gap:5px;margin-bottom:10px}
+    .daycell{flex:1;display:flex;flex-direction:column;align-items:center;padding:8px 4px;border-radius:var(--r);background:var(--ink-80);border:1px solid var(--ink-60);cursor:pointer;gap:4px;min-width:0}
+    .daycell.today{background:var(--ink-70);border-color:var(--amber-dim)}
+    .daynum{font-family:var(--fd);font-size:14px;font-weight:500;color:var(--white)}
+    .dayname{font-family:var(--fd);font-size:9px;color:var(--steel-30);text-transform:uppercase}
+    .daycell.today .daynum,.daycell.today .dayname{color:var(--amber)}
+    .dot{width:5px;height:5px;border-radius:50%}
+
+    /* ── Legend ── */
+    .legend{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+    .leg{display:flex;align-items:center;gap:5px;font-family:var(--fd);font-size:10px;color:var(--steel-30)}
+
+    /* ── Profile ── */
+    .profhead{display:flex;align-items:center;gap:14px;background:var(--ink-80);border:1px solid var(--ink-60);border-radius:var(--rlg);padding:16px;margin-bottom:10px;position:relative;overflow:hidden}
+    .profhead::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,var(--amber-line),transparent 70%)}
+    .avatar{width:52px;height:52px;border-radius:var(--r);background:var(--amber-glow);border:1px solid var(--amber-line);display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-size:16px;font-weight:500;color:var(--amber);flex-shrink:0}
+    .prof-name{font-family:var(--fh);font-size:16px;font-weight:700}
+    .prof-sub{font-family:var(--fd);font-size:11px;color:var(--steel-20);margin-top:2px;letter-spacing:.04em}
+
+    /* ── Admin stat grid ── */
+    .statgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+    .statcard{background:var(--ink-80);border:1px solid var(--ink-60);border-radius:var(--rlg);padding:14px;position:relative;overflow:hidden}
+    .statcard::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px}
+    .statcard-amber::after{background:var(--amber)}
+    .statcard-ok::after{background:var(--ok)}
+    .statcard-err::after{background:var(--err)}
+    .statcard-info::after{background:var(--info)}
+    .stat-val{font-family:var(--fd);font-size:28px;font-weight:500;color:var(--white);margin-bottom:2px}
+    .stat-lbl{font-family:var(--fd);font-size:10px;color:var(--steel-30);text-transform:uppercase;letter-spacing:.08em}
+
+    /* ── Admin list item ── */
+    .alist-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--ink-60)}
+    .alist-item:last-child{border-bottom:none}
+    .alist-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:2px}
+    .alist-main{flex:1;min-width:0}
+    .alist-title{font-family:var(--fd);font-size:12px;font-weight:500;color:var(--white);letter-spacing:.02em}
+    .alist-sub{font-size:11px;color:var(--steel-30);margin-top:2px}
+
+    /* ── Notification dot on tab ── */
+    .tab-rel{position:relative;display:inline-block}
+    .tab-dot{position:absolute;top:-2px;right:-4px;width:7px;height:7px;background:var(--err);border-radius:50%;border:1.5px solid var(--ink-90)}
+
+    /* ── Alert ── */
+    .alert{padding:10px 14px;border-radius:var(--r);font-size:13px;line-height:1.4;margin-bottom:12px}
+    .alert-warn{background:var(--warn-bg);color:#FBB040;border:1px solid rgba(217,119,6,.2)}
+    .alert-ok{background:var(--ok-bg);color:#4ADE80;border:1px solid rgba(42,157,92,.2)}
+
+    /* ── Toast ── */
+    #toast{position:fixed;bottom:calc(80px + var(--safe-bottom));left:16px;right:16px;max-width:398px;margin:0 auto;background:var(--ink-60);border:1px solid var(--steel-40);border-radius:var(--r);padding:12px 16px;font-size:13px;color:var(--white);z-index:200;opacity:0;transform:translateY(8px);transition:all .25s;pointer-events:none}
+    #toast.show{opacity:1;transform:none}
+
+    /* ── Toggle switch ── */
+    .toggle-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+    .toggle-info .toggle-title{font-size:14px;font-weight:500}
+    .toggle-info .toggle-sub{font-size:12px;color:var(--steel-20);margin-top:2px}
+    .toggle{position:relative;display:inline-block;width:44px;height:24px;flex-shrink:0}
+    .toggle input{opacity:0;width:0;height:0;position:absolute}
+    .toggle-slider{position:absolute;inset:0;background:var(--ink-60);border-radius:24px;cursor:pointer;transition:.3s}
+    .toggle-slider::before{content:'';position:absolute;width:18px;height:18px;left:3px;bottom:3px;background:var(--steel-20);border-radius:50%;transition:.3s}
+    .toggle input:checked + .toggle-slider{background:var(--amber-glow);border:1px solid var(--amber-dim)}
+    .toggle input:checked + .toggle-slider::before{transform:translateX(20px);background:var(--amber)}
+
+    /* ── Home greeting ── */
+    .home-header{background:var(--ink-90);padding:calc(var(--safe-top) + 14px) 16px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-shrink:0;border-bottom:1px solid var(--ink-60);position:relative}
+    .home-header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,var(--amber-line),transparent 60%)}
+    .home-greet{font-family:var(--fd);font-size:10px;color:var(--steel-30);text-transform:uppercase;letter-spacing:.1em}
+    .home-user{font-family:var(--fh);font-size:20px;font-weight:700;color:var(--white);margin-top:2px}
+    .home-notif-btn{width:36px;height:36px;border-radius:var(--r);background:var(--ink-70);border:1px solid var(--ink-60);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative}
+    .home-notif-btn svg{width:18px;height:18px;stroke:var(--steel-10);fill:none;stroke-width:1.6}
+    .notif-badge-dot{position:absolute;top:-2px;right:-2px;width:8px;height:8px;background:var(--err);border-radius:50%;border:2px solid var(--ink-90)}
+
+    /* ── Notif item ── */
+    .notif-item{display:flex;gap:12px;align-items:flex-start;padding:14px 0;border-bottom:1px solid var(--ink-60)}
+    .notif-item.unread .notif-title{color:var(--white)}
+    .notif-icon{width:36px;height:36px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px}
+    .notif-title{font-size:14px;font-weight:500;color:var(--steel-10)}
+    .notif-body{font-size:12px;color:var(--steel-30);margin-top:3px;line-height:1.4}
+    .notif-dot{width:7px;height:7px;border-radius:50%;background:var(--amber);flex-shrink:0;margin-top:5px}
+
+    /* ── Avail pill ── */
+    .avpill{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:var(--r);font-family:var(--fd);font-size:11px;margin-top:10px;letter-spacing:.04em}
+    .avpill.ok{background:var(--ok-bg);color:#4ADE80;border:1px solid rgba(42,157,92,.2)}
+    .avpill.no{background:var(--err-bg);color:#F87171;border:1px solid rgba(220,53,69,.2)}
+    .avpill.hid{display:none}
+  </style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ══ SPLASH ══ -->
+  <div id="screen-splash" class="screen active">
+    <div class="sp-mark">
+      <svg viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
+    </div>
+    <div class="sp-name">AeroFuel</div>
+    <div class="sp-tag">Sistema de abastecimento aeronáutico</div>
+    <div class="sp-bar"><div class="sp-fill"></div></div>
+  </div>
+
+  <!-- ══ LOGIN SELECT ══ -->
+  <div id="screen-login-select" class="screen">
+    <div class="ls-hero">
+      <div class="ls-mark">
+        <svg viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
+      </div>
+      <div class="ls-brand">AeroFuel</div>
+      <div class="ls-tagline">Sistema de abastecimento aeronáutico</div>
+    </div>
+    <div class="ls-card">
+      <div class="ls-card-title">Identificação de acesso</div>
+      <div class="ls-card-sub">Selecione o tipo de conta para prosseguir com o acesso ao sistema.</div>
+      <div class="ls-option ls-option-pilot" onclick="showScreen('login-pilot')">
+        <div class="ls-opt-icon">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M5.5 20a6.5 6.5 0 0 1 13 0"/></svg>
+        </div>
+        <div>
+          <div class="ls-opt-title">Acesso Piloto / Operador</div>
+          <div class="ls-opt-sub">Agendar e gerenciar abastecimentos</div>
+        </div>
+        <div class="ls-opt-arrow">›</div>
+      </div>
+      <div class="ls-option ls-option-admin" onclick="showScreen('login-admin')">
+        <div class="ls-opt-icon">
+          <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <div>
+          <div class="ls-opt-title">Acesso Administrativo</div>
+          <div class="ls-opt-sub">Restrito a operadores credenciados</div>
+        </div>
+        <div class="ls-opt-arrow">›</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ LOGIN PILOTO ══ -->
+  <div id="screen-login-pilot" class="screen">
+    <div class="lp-header">
+      <button class="tb-back" onclick="showScreen('login-select')">‹</button>
+      <div>
+        <div class="lp-header-title">Acesso Piloto</div>
+        <div class="tb-sub">Informe seus dados de identificação</div>
+      </div>
+    </div>
+    <div class="lp-scroll">
+      <div class="lp-pad">
+        <div class="lp-intro">Preencha seus dados para registro e acesso. Em caso de primeiro acesso, suas informações serão validadas pela equipe de operações. <strong>Não é necessário senha — o acesso é vinculado ao seu ANAC e e-mail cadastrado.</strong></div>
+        <div class="fg">
+          <label class="fl">Nome completo *</label>
+          <input id="pl-name" type="text" class="fi" placeholder="Nome conforme habilitação ANAC" autocomplete="name"/>
+          <div class="ferr" id="e-pl-name">Nome obrigatório (mín. 3 caracteres)</div>
+        </div>
+        <div class="fg">
+          <label class="fl">Número ANAC / Habilitação *</label>
+          <input id="pl-anac" type="text" class="fi" placeholder="Ex: 123456" maxlength="10"/>
+          <div class="ferr" id="e-pl-anac">Informe o número de registro ANAC</div>
+        </div>
+        <div class="fg">
+          <label class="fl">E-mail institucional *</label>
+          <input id="pl-email" type="email" class="fi" placeholder="piloto@empresa.com.br" autocomplete="email"/>
+          <div class="ferr" id="e-pl-email">E-mail inválido</div>
+        </div>
+        <div class="fg">
+          <label class="fl">Telefone / WhatsApp *</label>
+          <input id="pl-phone" type="tel" class="fi" placeholder="(11) 99999-0000" oninput="fmtPhone(this)" maxlength="15" autocomplete="tel"/>
+          <div class="ferr" id="e-pl-phone">Formato: (XX) XXXXX-XXXX</div>
+        </div>
+        <div class="fg">
+          <label class="fl">Empresa / Operadora</label>
+          <input id="pl-company" type="text" class="fi" placeholder="Razão social ou nome da operadora"/>
+        </div>
+        <div id="pilot-login-err" class="ferr" style="margin-bottom:12px"></div>
+        <button class="btn btn-amber" onclick="doPilotLogin()">Acessar sistema</button>
+        <p style="font-size:11px;color:var(--steel-30);text-align:center;margin-top:14px;line-height:1.6">Ao acessar, você concorda com os termos de uso e política de operação da plataforma AeroFuel.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ LOGIN ADMIN ══ -->
+  <div id="screen-login-admin" class="screen">
+    <div class="lp-header">
+      <button class="tb-back" onclick="showScreen('login-select')">‹</button>
+      <div>
+        <div class="lp-header-title">Acesso Administrativo</div>
+        <div class="tb-sub">Credenciais de operador interno</div>
+      </div>
+    </div>
+    <div class="lp-scroll">
+      <div class="lp-pad">
+        <div class="la-badge">
+          <svg width="12" height="12" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          Área Restrita
+        </div>
+        <div class="la-alert">⚠️ Este acesso é exclusivo para funcionários credenciados da empresa. O ID interno é fornecido pelo setor de TI no processo de onboarding.</div>
+        <div class="fg">
+          <label class="fl">ID Interno *</label>
+          <input id="ad-id" type="text" class="fi" placeholder="AF-XXXXX" maxlength="10" oninput="fmtAdminId(this)"/>
+          <div class="ferr" id="e-ad-id">Formato inválido (AF-XXXXX)</div>
+          <div class="fhint">Fornecido pelo setor de TI no seu onboarding</div>
+        </div>
+        <div class="fg">
+          <label class="fl">E-mail corporativo *</label>
+          <input id="ad-email" type="email" class="fi" placeholder="operador@aerofuel.com.br" autocomplete="email"/>
+          <div class="ferr" id="e-ad-email">E-mail corporativo inválido</div>
+        </div>
+        <div class="fg">
+          <label class="fl">Senha *</label>
+          <input id="ad-pass" type="password" class="fi" placeholder="••••••••" autocomplete="current-password"/>
+          <div class="ferr" id="e-ad-pass">Senha obrigatória</div>
+        </div>
+        <div id="admin-login-err" class="ferr" style="margin-bottom:12px"></div>
+        <button class="btn btn-amber" onclick="doAdminLogin()">Entrar no painel</button>
+        <p style="font-size:11px;color:var(--steel-30);text-align:center;margin-top:14px;line-height:1.6">Tentativas inválidas são registradas e auditadas. Em caso de perda de credenciais, contate o suporte interno.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ HOME PILOTO ══ -->
+  <div id="screen-home" class="screen">
+    <div class="home-header">
+      <div>
+        <div class="home-greet">Bem-vindo de volta</div>
+        <div class="home-user" id="home-username">—</div>
+      </div>
+      <div class="home-notif-btn" onclick="showTab('notif')" id="notif-btn">
+        <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <div class="notif-badge-dot" id="notif-badge-dot"></div>
+      </div>
+    </div>
+    <div class="scroll">
+      <div class="pad">
+        <div class="slabel">Esta semana</div>
+        <div class="weekstrip" id="week-strip"></div>
+        <div class="legend">
+          <div class="leg"><div class="dot" style="background:#4ADE80"></div>Disponível</div>
+          <div class="leg"><div class="dot" style="background:#FBB040"></div>Poucas vagas</div>
+          <div class="leg"><div class="dot" style="background:#F87171"></div>Lotado</div>
+        </div>
+        <div class="slabel">Próximos agendamentos</div>
+        <div id="home-appointments"></div>
+        <button class="btn btn-amber" onclick="startNew()" style="margin-top:8px">
+          <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Novo agendamento
+        </button>
+      </div>
+    </div>
+    <div class="tabbar">
+      <button class="tab active" onclick="showTab('home')">
+        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Home
+      </button>
+      <button class="tab" onclick="startNew()">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        Agendar
+      </button>
+      <button class="tab" onclick="showTab('list')">
+        <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        Meus
+      </button>
+      <button class="tab" onclick="showTab('profile')">
+        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Perfil
+      </button>
+    </div>
+  </div>
+
+  <!-- ══ NEW APPOINTMENT ══ -->
+  <div id="screen-new" class="screen">
+    <div class="topbar">
+      <button class="tb-back" onclick="showTab('home')">‹</button>
+      <div>
+        <div class="tb-title">Novo agendamento</div>
+        <div class="tb-sub" id="step-sub">Etapa 1 de 3 — Aeronave</div>
+      </div>
+    </div>
+    <div class="scroll">
+      <div class="pad">
+        <div class="stepbar">
+          <div class="seg done" id="seg1"></div>
+          <div class="seg" id="seg2"></div>
+          <div class="seg" id="seg3"></div>
+        </div>
+        <div style="font-size:12px;color:var(--steel-30);margin-bottom:16px" id="step-label-txt">Informe os dados da aeronave</div>
+
+        <!-- STEP 1 -->
+        <div id="step1">
+          <div class="fg">
+            <label class="fl">Matrícula da aeronave *</label>
+            <input id="f-reg" type="text" class="fi" placeholder="PR-ABX" maxlength="6" oninput="fmtReg(this)"/>
+            <div class="ferr" id="e-reg">Formato inválido — ex: PR-ABX</div>
+          </div>
+          <div class="frow">
+            <div class="fg">
+              <label class="fl">Tipo *</label>
+              <select id="f-type" class="fsel">
+                <option value="">Selecione</option>
+                <option>Jato Executivo</option>
+                <option>Helicóptero</option>
+                <option>Turboélice</option>
+                <option>Avião Pistão</option>
+                <option>Cargueiro</option>
+                <option>Outro</option>
+              </select>
+              <div class="ferr" id="e-type">Selecione o tipo</div>
+            </div>
+            <div class="fg">
+              <label class="fl">Modelo *</label>
+              <input id="f-model" type="text" class="fi" placeholder="Phenom 300"/>
+              <div class="ferr" id="e-model">Informe o modelo</div>
+            </div>
+          </div>
+          <div class="fg">
+            <label class="fl">Cap. tanque (litros) *</label>
+            <input id="f-tank" type="number" class="fi" placeholder="1500" min="50" max="50000"/>
+            <div class="ferr" id="e-tank">Informe a capacidade</div>
+          </div>
+          <button class="btn btn-amber" onclick="goStep(2)">Próximo — Contato</button>
+        </div>
+
+        <!-- STEP 2 -->
+        <div id="step2" style="display:none">
+          <div class="fg">
+            <label class="fl">Nome completo *</label>
+            <input id="f-name" type="text" class="fi" placeholder="Nome conforme habilitação" autocomplete="name"/>
+            <div class="ferr" id="e-name">Nome obrigatório</div>
+          </div>
+          <div class="fg">
+            <label class="fl">Telefone *</label>
+            <input id="f-phone" type="tel" class="fi" placeholder="(11) 99999-0000" oninput="fmtPhone(this)" maxlength="15" autocomplete="tel"/>
+            <div class="ferr" id="e-phone">Formato: (XX) XXXXX-XXXX</div>
+          </div>
+          <div class="fg">
+            <label class="fl">E-mail *</label>
+            <input id="f-email" type="email" class="fi" placeholder="piloto@email.com" autocomplete="email"/>
+            <div class="ferr" id="e-email">E-mail inválido</div>
+          </div>
+          <div class="fg">
+            <label class="fl">Empresa / Operadora</label>
+            <input id="f-company" type="text" class="fi" placeholder="Opcional"/>
+          </div>
+          <div class="fg">
+            <label class="fl">WhatsApp emergência *</label>
+            <input id="f-emergency" type="tel" class="fi" placeholder="(11) 99999-0000" oninput="fmtPhone(this)" maxlength="15"/>
+            <div class="ferr" id="e-emergency">Informe o telefone de emergência</div>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-ghost btn-sm" onclick="goStep(1)">‹ Voltar</button>
+            <button class="btn btn-amber btn-sm" onclick="goStep(3)">Próximo — Combustível</button>
+          </div>
+        </div>
+
+        <!-- STEP 3 -->
+        <div id="step3" style="display:none">
+          <div class="fg">
+            <label class="fl">Tipo de combustível *</label>
+            <select id="f-fuel" class="fsel">
+              <option value="">Selecione</option>
+              <option value="QAV">QAV — Querosene de Aviação</option>
+              <option value="AVGAS">AVGAS — Gasolina de Aviação</option>
+            </select>
+            <div class="ferr" id="e-fuel">Selecione o combustível</div>
+          </div>
+          <div class="fg">
+            <label class="fl">Quantidade estimada *</label>
+            <div class="qtyrow">
+              <input type="range" id="f-qty-range" min="50" max="5000" step="50" value="500" oninput="syncQty(this.value)"/>
+              <div class="qtydsp" id="qty-display">500 L</div>
+            </div>
+            <input id="f-qty" type="number" class="fi" value="500" min="50" max="5000" style="margin-top:8px" oninput="syncQtyInput(this.value)"/>
+            <div class="ferr" id="e-qty">Mínimo 50 litros</div>
+          </div>
+          <div class="fg">
+            <label class="fl">Data *</label>
+            <input id="f-date" type="date" class="fi" onchange="loadSlots()"/>
+            <div class="ferr" id="e-date">Selecione uma data futura</div>
+          </div>
+          <div id="slot-section" style="display:none">
+            <div class="fg">
+              <label class="fl">Horário *</label>
+              <div class="slotgrid" id="slot-grid"></div>
+              <div class="ferr" id="e-time">Selecione um horário disponível</div>
+              <div class="avpill hid" id="avail-pill"></div>
+            </div>
+          </div>
+          <div class="fg">
+            <label class="fl">Local de abastecimento *</label>
+            <select id="f-location" class="fsel">
+              <option value="">Selecione</option>
+              <option>Pátio Sul — Hangar 1</option>
+              <option>Pátio Sul — Hangar 3</option>
+              <option>Pátio Norte</option>
+              <option>Pátio Leste</option>
+            </select>
+            <div class="ferr" id="e-location">Selecione o local</div>
+          </div>
+          <div class="fg">
+            <label class="fl">Observações</label>
+            <textarea id="f-notes" class="fta" placeholder="Informações adicionais..." maxlength="200"></textarea>
+            <div class="fhint"><span id="notes-count">0</span>/200 caracteres</div>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-ghost btn-sm" onclick="goStep(2)">‹ Voltar</button>
+            <button class="btn btn-amber btn-sm" onclick="goConfirm()">Revisar pedido</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ CONFIRM ══ -->
+  <div id="screen-confirm" class="screen">
+    <div class="topbar">
+      <button class="tb-back" onclick="showScreen('new')">‹</button>
+      <div>
+        <div class="tb-title">Confirmação</div>
+        <div class="tb-sub">Revise antes de confirmar</div>
+      </div>
+    </div>
+    <div class="scroll">
+      <div class="pad">
+        <div class="sumbox" id="confirm-summary"></div>
+        <div class="alert alert-warn" style="margin-bottom:12px">
+          <strong>Política de cancelamento:</strong> cancelamentos com menos de 2h de antecedência estão sujeitos a taxa de 20% sobre o valor estimado.
+        </div>
+        <div class="chkrow">
+          <input type="checkbox" id="terms-check"/>
+          <label for="terms-check">Li e aceito os <a href="#">termos de serviço</a> e a política de cancelamento</label>
+        </div>
+        <div class="btn-row" style="margin-bottom:10px">
+          <button class="btn btn-ghost btn-sm" onclick="addToCalendar()">
+            <svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Calendário
+          </button>
+          <button class="btn btn-ghost btn-sm" onclick="shareAppointment()">
+            <svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            Compartilhar
+          </button>
+        </div>
+        <button class="btn btn-amber" id="confirm-btn" onclick="confirmAppointment()">Confirmar agendamento</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ LIST ══ -->
+  <div id="screen-list" class="screen">
+    <div class="topbar">
+      <div>
+        <div class="tb-title">Meus agendamentos</div>
+        <div class="tb-sub" id="list-count">—</div>
+      </div>
+    </div>
+    <div class="itabs">
+      <button class="itab active" onclick="switchListTab('upcoming',this)">Próximos</button>
+      <button class="itab" onclick="switchListTab('done',this)">Concluídos</button>
+      <button class="itab" onclick="switchListTab('cancelled',this)">Cancelados</button>
+    </div>
+    <div class="scroll" id="list-content"></div>
+    <div class="tabbar">
+      <button class="tab" onclick="showTab('home')">
+        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home</button>
+      <button class="tab" onclick="startNew()">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Agendar</button>
+      <button class="tab active" onclick="showTab('list')">
+        <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>Meus</button>
+      <button class="tab" onclick="showTab('profile')">
+        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Perfil</button>
+    </div>
+  </div>
+
+  <!-- ══ NOTIFICATIONS ══ -->
+  <div id="screen-notif" class="screen">
+    <div class="topbar">
+      <button class="tb-back" onclick="showTab('home')">‹</button>
+      <div class="tb-title">Notificações</div>
+      <button class="tb-btn" onclick="markAllRead()">Marcar lidas</button>
+    </div>
+    <div class="scroll"><div class="pad" id="notif-list"></div></div>
+  </div>
+
+  <!-- ══ PROFILE ══ -->
+  <div id="screen-profile" class="screen">
+    <div class="topbar"><div class="tb-title">Perfil</div></div>
+    <div class="scroll">
+      <div class="pad">
+        <div class="profhead">
+          <div class="avatar" id="profile-avatar">—</div>
+          <div>
+            <div class="prof-name" id="profile-name">—</div>
+            <div class="prof-sub" id="profile-email">—</div>
+            <div class="prof-sub" id="profile-anac" style="margin-top:4px">—</div>
+          </div>
+        </div>
+        <div class="slabel">Dados pessoais</div>
+        <div class="card">
+          <div class="fg" style="margin-bottom:10px">
+            <label class="fl">Nome completo</label>
+            <input type="text" class="fi" id="p-name"/>
+          </div>
+          <div class="fg" style="margin-bottom:10px">
+            <label class="fl">Telefone</label>
+            <input type="tel" class="fi" id="p-phone"/>
+          </div>
+          <div class="fg" style="margin-bottom:10px">
+            <label class="fl">Empresa</label>
+            <input type="text" class="fi" id="p-company" placeholder="Opcional"/>
+          </div>
+          <button class="btn btn-amber btn-sm" onclick="saveProfile()">Salvar alterações</button>
+        </div>
+        <div class="slabel">Notificações</div>
+        <div class="card">
+          <div class="toggle-row">
+            <div class="toggle-info"><div class="toggle-title">Push</div><div class="toggle-sub">Alertas no dispositivo</div></div>
+            <label class="toggle"><input type="checkbox" id="notif-push" checked/><span class="toggle-slider"></span></label>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info"><div class="toggle-title">E-mail</div><div class="toggle-sub">Confirmações e lembretes</div></div>
+            <label class="toggle"><input type="checkbox" id="notif-email" checked/><span class="toggle-slider"></span></label>
+          </div>
+          <div class="toggle-row" style="margin-bottom:0">
+            <div class="toggle-info"><div class="toggle-title">SMS</div><div class="toggle-sub">Lembretes por mensagem</div></div>
+            <label class="toggle"><input type="checkbox" id="notif-sms"/><span class="toggle-slider"></span></label>
+          </div>
+        </div>
+        <div class="slabel">Aeronaves</div>
+        <div id="profile-aircraft"></div>
+        <div style="margin-top:16px;margin-bottom:40px">
+          <button class="btn btn-danger btn-sm" onclick="doLogout()">Sair da conta</button>
+        </div>
+      </div>
+    </div>
+    <div class="tabbar">
+      <button class="tab" onclick="showTab('home')">
+        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home</button>
+      <button class="tab" onclick="startNew()">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Agendar</button>
+      <button class="tab" onclick="showTab('list')">
+        <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>Meus</button>
+      <button class="tab active" onclick="showTab('profile')">
+        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Perfil</button>
+    </div>
+  </div>
+
+  <!-- ══ ADMIN DASHBOARD ══ -->
+  <div id="screen-admin" class="screen">
+    <div class="topbar">
+      <div style="width:34px;height:34px;border-radius:var(--r);background:var(--info-bg);border:1px solid rgba(59,130,246,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg width="18" height="18" viewBox="0 0 24 24" stroke="#93C5FD" fill="none" stroke-width="1.6"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      </div>
+      <div style="flex:1">
+        <div class="tb-title" id="admin-name">—</div>
+        <div class="tb-sub">Painel administrativo</div>
+      </div>
+      <button class="tb-btn" onclick="doLogout()">Sair</button>
+    </div>
+    <div class="itabs">
+      <button class="itab active" onclick="switchAdminTab('agenda',this)">Agenda</button>
+      <button class="itab" onclick="switchAdminTab('all',this)">Todos</button>
+      <button class="itab" onclick="switchAdminTab('stats',this)">Estatísticas</button>
+    </div>
+    <div class="scroll">
+      <div class="pad" id="admin-content"></div>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<!-- ══ Success overlay ══ -->
+<div class="overlay" id="success-overlay">
+  <div class="ovcard">
+    <div class="ov-icon">✅</div>
+    <div class="ov-title">Agendamento confirmado</div>
+    <div class="ov-sub" id="success-detail"></div>
+    <button class="btn btn-amber" onclick="afterSuccess()">Ver meus agendamentos</button>
+  </div>
+</div>
+
+<!-- ══ Cancel modal ══ -->
+<div class="modal-bg" id="cancel-modal">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Cancelar agendamento?</div>
+    <div style="font-size:14px;color:var(--steel-20);margin-bottom:16px;line-height:1.5" id="cancel-modal-text"></div>
+    <div class="btn-row">
+      <button class="btn btn-ghost btn-sm" onclick="closeCancelModal()">Manter</button>
+      <button class="btn btn-danger btn-sm" onclick="executeCancelCurrent()">Cancelar agendamento</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ Toast ══ -->
+<div id="toast"></div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   STATE & DATA
+══════════════════════════════════════════════════════════════ */
+const FUEL_PRICE = { QAV: 7.8, AVGAS: 12.5 };
+const BUSY_SLOTS = ['09:00','09:30','15:00','15:30','16:00'];
+const FEW_SLOTS  = ['10:00','13:30','17:00'];
+
+let state = {
+  userType: null,        // 'pilot' | 'admin'
+  user: null,
+  currentStep: 1,
+  selectedTime: null,
+  cancelTargetId: null,
+  listTab: 'upcoming',
+  adminTab: 'agenda',
+  form: {},
+  appointments: [],
+  notifications: [],
+};
+
+function seedDemoData() {
+  const today = dateStr(new Date());
+  const future1 = dateStr(new Date(Date.now() + 3*86400000));
+  const future2 = dateStr(new Date(Date.now() + 7*86400000));
+  const past    = dateStr(new Date(Date.now() - 12*86400000));
+  state.appointments = [
+    { id:'1', reg:'PR-ABX', type:'Jato Executivo', model:'Embraer Phenom 300', fuel:'QAV', qty:800, date:today, time:'14:00', location:'Pátio Sul — Hangar 3', status:'Confirmado', total:6240, pilot:'Carlos Mendes' },
+    { id:'2', reg:'PT-HLC', type:'Helicóptero', model:'Bell 407', fuel:'AVGAS', qty:200, date:future1, time:'09:30', location:'Pátio Norte', status:'Pendente', total:2500, pilot:'Carlos Mendes' },
+    { id:'3', reg:'PR-RXJ', type:'Turboélice', model:'King Air C90', fuel:'AVGAS', qty:350, date:future2, time:'11:00', location:'Pátio Leste', status:'Confirmado', total:4375, pilot:'Ana Paula Ferreira' },
+    { id:'4', reg:'PR-ABX', type:'Jato Executivo', model:'Embraer Phenom 300', fuel:'QAV', qty:600, date:past, time:'10:00', location:'Pátio Sul — Hangar 1', status:'Concluído', total:4680, pilot:'Carlos Mendes' },
+  ];
+  state.notifications = [
+    { id:'n1', icon:'✅', bg:'var(--ok-bg)', title:'Agendamento confirmado', body:'PR-ABX — '+fmt(today)+' às 14:00', read:false },
+    { id:'n2', icon:'🔔', bg:'var(--warn-bg)', title:'Lembrete: em 24h', body:'PT-HLC — '+fmt(future1)+' às 09:30 — Pátio Norte', read:false },
+    { id:'n3', icon:'✔️', bg:'var(--ink-70)', title:'Abastecimento concluído', body:'PR-ABX — '+fmt(past)+' às 10:00', read:true },
+  ];
+}
+
+/* ══ Helpers ══ */
+function dateStr(d){ return d.toISOString().split('T')[0]; }
+function fmt(iso){ const d=new Date(iso+'T00:00:00'); return d.toLocaleDateString('pt-BR',{day:'2-digit',month:'short'}); }
+function fmtCurrency(v){ return v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); }
+function getInitials(n){ return n.trim().split(' ').filter(Boolean).slice(0,2).map(p=>p[0]).join('').toUpperCase(); }
+
+/* ══════════════════════════════════════════════════════════════
+   NAVIGATION
+══════════════════════════════════════════════════════════════ */
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  const el = document.getElementById('screen-'+id);
+  if(el){ el.classList.add('active'); el.querySelector('.scroll')?.scrollTo(0,0); }
+}
+function showTab(tab){
+  showScreen(tab);
+  if(tab==='home') renderHome();
+  if(tab==='list') renderList();
+  if(tab==='notif') renderNotif();
+  if(tab==='profile') renderProfile();
+}
+
+/* ══════════════════════════════════════════════════════════════
+   TOAST
+══════════════════════════════════════════════════════════════ */
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3000); }
+
+/* ══════════════════════════════════════════════════════════════
+   AUTH
+══════════════════════════════════════════════════════════════ */
+function fmtPhone(el){
+  let n=el.value.replace(/\D/g,'');
+  if(n.length<=2) el.value='('+n;
+  else if(n.length<=7) el.value='('+n.slice(0,2)+') '+n.slice(2);
+  else el.value='('+n.slice(0,2)+') '+n.slice(2,7)+'-'+n.slice(7,11);
+}
+function fmtAdminId(el){
+  let v=el.value.toUpperCase().replace(/[^A-Z0-9-]/g,'');
+  if(v.length>2&&v[2]!=='-') v=v.slice(0,2)+'-'+v.slice(2).replace(/-/g,'');
+  el.value=v.slice(0,8);
+}
+function showLoginErr(id,msg){ const el=document.getElementById(id); el.textContent=msg; el.classList.add('show'); }
+function clearLoginErr(id){ const el=document.getElementById(id); if(el){ el.textContent=''; el.classList.remove('show'); } }
+
+function doPilotLogin(){
+  clearLoginErr('pilot-login-err');
+  ['pl-name','pl-anac','pl-email','pl-phone'].forEach(id=>document.getElementById(id)?.classList.remove('err'));
+  let ok=true;
+  const name=document.getElementById('pl-name').value.trim();
+  const anac=document.getElementById('pl-anac').value.trim();
+  const email=document.getElementById('pl-email').value.trim();
+  const phone=document.getElementById('pl-phone').value.trim();
+  if(name.length<3){ showErr('e-pl-name'); document.getElementById('pl-name').classList.add('err'); ok=false; }
+  else hideErr('e-pl-name');
+  if(!anac){ showErr('e-pl-anac'); document.getElementById('pl-anac').classList.add('err'); ok=false; }
+  else hideErr('e-pl-anac');
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ showErr('e-pl-email'); document.getElementById('pl-email').classList.add('err'); ok=false; }
+  else hideErr('e-pl-email');
+  if(!/^\(\d{2}\) \d{4,5}-\d{4}$/.test(phone)){ showErr('e-pl-phone'); document.getElementById('pl-phone').classList.add('err'); ok=false; }
+  else hideErr('e-pl-phone');
+  if(!ok) return;
+  state.userType='pilot';
+  state.user={ name, anac, email, phone, company:document.getElementById('pl-company').value.trim() };
+  seedDemoData();
+  showTab('home');
+}
+
+function doAdminLogin(){
+  clearLoginErr('admin-login-err');
+  let ok=true;
+  const id=document.getElementById('ad-id').value.trim();
+  const email=document.getElementById('ad-email').value.trim();
+  const pass=document.getElementById('ad-pass').value;
+  if(!/^AF-[A-Z0-9]{3,6}$/.test(id)){ showErr('e-ad-id'); document.getElementById('ad-id').classList.add('err'); ok=false; }
+  else hideErr('e-ad-id');
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ showErr('e-ad-email'); document.getElementById('ad-email').classList.add('err'); ok=false; }
+  else hideErr('e-ad-email');
+  if(!pass){ showErr('e-ad-pass'); document.getElementById('ad-pass').classList.add('err'); ok=false; }
+  else hideErr('e-ad-pass');
+  if(!ok) return;
+  state.userType='admin';
+  state.user={ name:'Operador '+id, id, email };
+  seedDemoData();
+  document.getElementById('admin-name').textContent=state.user.name;
+  showScreen('admin');
+  renderAdminContent();
+}
+
+function doLogout(){
+  if(confirm('Deseja sair da conta?')){
+    state.userType=null; state.user=null;
+    showScreen('login-select');
+  }
+}
+
+function showErr(id){ const el=document.getElementById(id); if(el) el.classList.add('show'); }
+function hideErr(id){ const el=document.getElementById(id); if(el) el.classList.remove('show'); }
+
+/* ══════════════════════════════════════════════════════════════
+   HOME
+══════════════════════════════════════════════════════════════ */
+function renderHome(){
+  const u=state.user;
+  document.getElementById('home-username').textContent=u?.name?.split(' ')[0]||'—';
+  const unread=state.notifications.filter(n=>!n.read).length;
+  document.getElementById('notif-badge-dot').style.display=unread?'':'none';
+  renderWeekStrip();
+  renderHomeAppointments();
+}
+function renderWeekStrip(){
+  const strip=document.getElementById('week-strip');
+  const today=new Date();
+  const stats=['av','few','av','few','full','closed','closed'];
+  const colors={av:'#4ADE80',few:'#FBB040',full:'#F87171',closed:'var(--steel-40)'};
+  strip.innerHTML=Array.from({length:7},(_,i)=>{
+    const d=new Date(today); d.setDate(today.getDate()+i);
+    const isT=i===0;
+    return `<div class="daycell${isT?' today':''}">
+      <span class="dayname">${d.toLocaleDateString('pt-BR',{weekday:'short'}).slice(0,3)}</span>
+      <span class="daynum">${d.getDate()}</span>
+      <div class="dot" style="background:${colors[stats[i]]}"></div>
+    </div>`;
+  }).join('');
+}
+function renderHomeAppointments(){
+  const now=new Date();
+  const up=state.appointments.filter(a=>(a.status==='Confirmado'||a.status==='Pendente')&&new Date(a.date+'T'+a.time+':00')>=now);
+  const el=document.getElementById('home-appointments');
+  el.innerHTML=up.length?up.map(a=>appointmentCard(a,false)).join(''):`<div class="empty">
+    <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    <div class="empty-title">Sem agendamentos</div>
+    <div class="empty-sub">Agende o próximo abastecimento</div>
+  </div>`;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   APPOINTMENT CARDS
+══════════════════════════════════════════════════════════════ */
+const BADGE_MAP={Confirmado:'badge-ok',Pendente:'badge-warn',Concluído:'badge-info',Cancelado:'badge-err'};
+function appointmentCard(a,showActions=true){
+  const canCancel=showActions&&a.status!=='Cancelado'&&a.status!=='Concluído'&&new Date(a.date+'T'+a.time+':00')>new Date(Date.now()+2*3600000);
+  return `<div class="card">
+    <div class="card-row">
+      <div>
+        <div class="card-title">${a.reg} — ${a.type}</div>
+        <div class="card-sub">${fmt(a.date)} · ${a.time} · ${a.fuel} · ${a.qty.toLocaleString('pt-BR')} L</div>
+      </div>
+      <span class="badge ${BADGE_MAP[a.status]||'badge-mute'}">${a.status}</span>
+    </div>
+    <div class="divider"></div>
+    <div style="font-size:12px;color:var(--steel-30);margin-bottom:${canCancel?'10px':'0'}">📍 ${a.location}${a.total?'&emsp;'+fmtCurrency(a.total):''}</div>
+    ${canCancel?`<div class="btn-row">
+      <button class="btn btn-ghost btn-sm" onclick="startNew()">Reagendar</button>
+      <button class="btn btn-danger btn-sm" onclick="askCancel('${a.id}')">Cancelar</button>
+    </div>`:''}
+  </div>`;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   LIST
+══════════════════════════════════════════════════════════════ */
+function renderList(){
+  const now=new Date();
+  const tabs={
+    upcoming:state.appointments.filter(a=>(a.status==='Confirmado'||a.status==='Pendente')&&new Date(a.date+'T'+a.time+':00')>=now),
+    done:state.appointments.filter(a=>a.status==='Concluído'),
+    cancelled:state.appointments.filter(a=>a.status==='Cancelado'),
+  };
+  const u=tabs.upcoming.length;
+  document.getElementById('list-count').textContent=`${u} próximo${u!==1?'s':''}`;
+  const list=tabs[state.listTab]||[];
+  const el=document.getElementById('list-content');
+  el.innerHTML=list.length?`<div class="pad">${list.map(a=>appointmentCard(a,state.listTab==='upcoming')).join('')}</div>`:`<div class="empty">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <div class="empty-title">Nenhum registro</div>
+    <div class="empty-sub">Sem ${state.listTab==='upcoming'?'próximos agendamentos':state.listTab==='done'?'concluídos':'cancelamentos'}</div>
+  </div>`;
+}
+function switchListTab(tab,btn){
+  state.listTab=tab;
+  document.querySelectorAll('#screen-list .itab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  renderList();
+}
+
+/* ══════════════════════════════════════════════════════════════
+   CANCEL
+══════════════════════════════════════════════════════════════ */
+function askCancel(id){
+  const a=state.appointments.find(x=>x.id===id); if(!a) return;
+  state.cancelTargetId=id;
+  document.getElementById('cancel-modal-text').textContent=`Deseja cancelar o agendamento de ${a.reg} em ${fmt(a.date)} às ${a.time}? Esta ação não pode ser desfeita.`;
+  document.getElementById('cancel-modal').classList.add('show');
+}
+function closeCancelModal(){ document.getElementById('cancel-modal').classList.remove('show'); state.cancelTargetId=null; }
+function executeCancelCurrent(){
+  if(!state.cancelTargetId) return;
+  state.appointments=state.appointments.map(a=>a.id===state.cancelTargetId?{...a,status:'Cancelado'}:a);
+  closeCancelModal(); renderList(); toast('Agendamento cancelado');
+}
+
+/* ══════════════════════════════════════════════════════════════
+   NEW APPOINTMENT
+══════════════════════════════════════════════════════════════ */
+function startNew(){
+  state.currentStep=1; state.selectedTime=null;
+  [1,2,3].forEach(i=>document.getElementById('step'+i).style.display=i===1?'':'none');
+  updateStepUI(); showScreen('new');
+}
+function updateStepUI(){
+  const s=state.currentStep;
+  ['seg1','seg2','seg3'].forEach((id,i)=>document.getElementById(id).classList.toggle('done',i<s));
+  const labs=['Etapa 1 de 3 — Aeronave','Etapa 2 de 3 — Contato','Etapa 3 de 3 — Combustível'];
+  const subs=['Informe os dados da aeronave','Dados de contato do responsável','Combustível, data e horário'];
+  document.getElementById('step-sub').textContent=labs[s-1];
+  document.getElementById('step-label-txt').textContent=subs[s-1];
+}
+function clearAllErrors(){
+  document.querySelectorAll('.ferr').forEach(e=>e.classList.remove('show'));
+  document.querySelectorAll('.fi,.fsel').forEach(e=>e.classList.remove('err'));
+}
+function reqField(id,errId,test){
+  const val=document.getElementById(id)?.value?.trim();
+  const pass=test?test(val):!!val;
+  if(!pass){ showErr(errId); document.getElementById(id)?.classList.add('err'); return false; }
+  hideErr(errId); return true;
+}
+function validateStep(s){
+  let ok=true;
+  if(s===1){
+    ok&=reqField('f-reg','e-reg',v=>/^[A-Z]{2}-[A-Z]{3}$/.test(v));
+    ok&=reqField('f-type','e-type');
+    ok&=reqField('f-model','e-model',v=>v&&v.length>=2);
+    ok&=reqField('f-tank','e-tank',v=>v&&!isNaN(v)&&Number(v)>0);
+  }
+  if(s===2){
+    ok&=reqField('f-name','e-name',v=>v&&v.length>=3);
+    ok&=reqField('f-phone','e-phone',v=>/^\(\d{2}\) \d{4,5}-\d{4}$/.test(v));
+    ok&=reqField('f-email','e-email',v=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v));
+    ok&=reqField('f-emergency','e-emergency',v=>/^\(\d{2}\) \d{4,5}-\d{4}$/.test(v));
+  }
+  if(s===3){
+    ok&=reqField('f-fuel','e-fuel');
+    ok&=reqField('f-qty','e-qty',v=>v&&Number(v)>=50);
+    ok&=reqField('f-date','e-date');
+    if(!state.selectedTime){ showErr('e-time'); ok=false; } else hideErr('e-time');
+    ok&=reqField('f-location','e-location');
+  }
+  return !!ok;
+}
+function goStep(n){
+  clearAllErrors();
+  if(n>state.currentStep&&!validateStep(state.currentStep)) return;
+  document.getElementById('step'+state.currentStep).style.display='none';
+  state.currentStep=n;
+  document.getElementById('step'+n).style.display='';
+  updateStepUI();
+  if(n===3){ const d=new Date(); d.setHours(d.getHours()+2); document.getElementById('f-date').min=d.toISOString().split('T')[0]; }
+  document.querySelector('#screen-new .scroll')?.scrollTo(0,0);
+}
+function fmtReg(el){
+  let v=el.value.replace(/[^A-Za-z-]/g,'').toUpperCase();
+  if(v.length>2&&v[2]!=='-') v=v.slice(0,2)+'-'+v.slice(2).replace(/-/g,'');
+  el.value=v.slice(0,6);
+}
+function syncQty(v){ document.getElementById('f-qty').value=v; document.getElementById('qty-display').textContent=v+' L'; }
+function syncQtyInput(v){ const val=Math.min(5000,Math.max(50,Number(v)||50)); document.getElementById('f-qty-range').value=val; document.getElementById('qty-display').textContent=val+' L'; }
+document.addEventListener('input',e=>{ if(e.target.id==='f-notes') document.getElementById('notes-count').textContent=e.target.value.length; });
+
+function loadSlots(){
+  const dateVal=document.getElementById('f-date').value; if(!dateVal) return;
+  state.selectedTime=null;
+  document.getElementById('avail-pill').className='avpill hid';
+  let html='';
+  for(let h=6;h<22;h++) for(let m=0;m<60;m+=30){
+    const t=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');
+    let cls='slot';
+    if(BUSY_SLOTS.includes(t)) cls+=' full';
+    else if(FEW_SLOTS.includes(t)) cls+=' few';
+    else cls+=' av';
+    html+=`<div class="${cls}" id="slot-${t}" onclick="selectSlot('${t}','${cls}')">${t}</div>`;
+  }
+  document.getElementById('slot-grid').innerHTML=html;
+  document.getElementById('slot-section').style.display='';
+}
+function selectSlot(t,cls){
+  if(cls.includes('full')) return;
+  state.selectedTime=t;
+  document.querySelectorAll('.slot').forEach(s=>s.classList.remove('sel'));
+  document.getElementById('slot-'+t)?.classList.add('sel');
+  const pill=document.getElementById('avail-pill');
+  pill.className='avpill ok';
+  pill.textContent='✓ Horário disponível — '+t;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   CONFIRM
+══════════════════════════════════════════════════════════════ */
+function goConfirm(){
+  clearAllErrors();
+  if(!validateStep(3)) return;
+  const qty=Number(document.getElementById('f-qty').value)||500;
+  const fuel=document.getElementById('f-fuel').value;
+  const total=qty*(FUEL_PRICE[fuel]||0);
+  const reg=document.getElementById('f-reg').value;
+  const type=document.getElementById('f-type').value;
+  const date=document.getElementById('f-date').value;
+  const loc=document.getElementById('f-location').value;
+  state.form={reg,type,model:document.getElementById('f-model').value,fuel,qty,date,time:state.selectedTime,location:loc,total,name:document.getElementById('f-name').value,email:document.getElementById('f-email').value};
+  document.getElementById('confirm-summary').innerHTML=`
+    <div class="sumbox-hd">Resumo do pedido</div>
+    <div class="sumrow"><span class="sumkey">Aeronave</span><span class="sumval">${reg} — ${type}</span></div>
+    <div class="sumrow"><span class="sumkey">Modelo</span><span class="sumval">${state.form.model}</span></div>
+    <div class="sumrow"><span class="sumkey">Combustível</span><span class="sumval">${fuel}</span></div>
+    <div class="sumrow"><span class="sumkey">Quantidade</span><span class="sumval">${qty.toLocaleString('pt-BR')} L</span></div>
+    <div class="sumrow"><span class="sumkey">Data e hora</span><span class="sumval">${fmt(date)} às ${state.selectedTime}</span></div>
+    <div class="sumrow"><span class="sumkey">Local</span><span class="sumval">${loc}</span></div>
+    <div class="divider"></div>
+    <div class="sumtotal"><span class="sumtotal-lbl">Total estimado</span><span class="sumtotal-val">${fmtCurrency(total)}</span></div>`;
+  document.getElementById('terms-check').checked=false;
+  showScreen('confirm');
+}
+function confirmAppointment(){
+  if(!document.getElementById('terms-check').checked){ toast('Aceite os termos para continuar'); return; }
+  const btn=document.getElementById('confirm-btn');
+  btn.textContent='Confirmando...'; btn.disabled=true;
+  setTimeout(()=>{
+    const a={id:String(Date.now()),reg:state.form.reg,type:state.form.type,model:state.form.model,fuel:state.form.fuel,qty:state.form.qty,date:state.form.date,time:state.form.time,location:state.form.location,status:'Confirmado',total:state.form.total,pilot:state.user?.name||'—'};
+    state.appointments.unshift(a);
+    state.notifications.unshift({id:'n'+Date.now(),icon:'✅',bg:'var(--ok-bg)',title:'Agendamento confirmado!',body:`${a.reg} — ${fmt(a.date)} às ${a.time}`,read:false});
+    btn.textContent='Confirmar agendamento'; btn.disabled=false;
+    document.getElementById('success-detail').textContent=`${a.reg} · ${fmt(a.date)} às ${a.time} · ${a.location}`;
+    document.getElementById('success-overlay').classList.add('show');
+  },1000);
+}
+function afterSuccess(){
+  document.getElementById('success-overlay').classList.remove('show');
+  state.listTab='upcoming'; showTab('list');
+}
+function addToCalendar(){
+  const f=state.form; if(!f.date) return;
+  const dt=f.date.replace(/-/g,'')+'T'+f.time.replace(':','')+'00';
+  window.open(`https://calendar.google.com/calendar/render?action=TEMPLATE&text=Abastecimento+${f.reg}&dates=${dt}/${dt}&details=AeroFuel+${f.fuel}+${f.qty}L&location=${encodeURIComponent(f.location)}`,'_blank');
+}
+function shareAppointment(){
+  const f=state.form;
+  const text=`AeroFuel — Agendamento\nAeronave: ${f.reg}\nData: ${fmt(f.date)} às ${f.time}\nCombustível: ${f.fuel} — ${f.qty}L\nLocal: ${f.location}\nTotal estimado: ${fmtCurrency(f.total)}`;
+  if(navigator.share) navigator.share({title:'AeroFuel',text});
+  else navigator.clipboard?.writeText(text).then(()=>toast('Copiado para área de transferência'));
+}
+
+/* ══════════════════════════════════════════════════════════════
+   NOTIFICATIONS
+══════════════════════════════════════════════════════════════ */
+function renderNotif(){
+  const el=document.getElementById('notif-list');
+  if(!state.notifications.length){ el.innerHTML='<div class="empty"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><div class="empty-title">Sem notificações</div></div>'; return; }
+  el.innerHTML=state.notifications.map(n=>`
+    <div class="notif-item${n.read?'':' unread'}">
+      <div class="notif-icon" style="background:${n.bg||'var(--ink-70)'}; border:1px solid rgba(255,255,255,.05)">${n.icon}</div>
+      <div style="flex:1">
+        <div class="notif-title">${n.title}</div>
+        <div class="notif-body">${n.body}</div>
+      </div>
+      ${!n.read?'<div class="notif-dot"></div>':''}
+    </div>`).join('');
+}
+function markAllRead(){
+  state.notifications.forEach(n=>n.read=true);
+  document.getElementById('notif-badge-dot').style.display='none';
+  renderNotif(); toast('Todas as notificações marcadas como lidas');
+}
+
+/* ══════════════════════════════════════════════════════════════
+   PROFILE
+══════════════════════════════════════════════════════════════ */
+function renderProfile(){
+  const u=state.user||{};
+  document.getElementById('profile-avatar').textContent=getInitials(u.name||'?');
+  document.getElementById('profile-name').textContent=u.name||'—';
+  document.getElementById('profile-email').textContent=u.email||'—';
+  document.getElementById('profile-anac').textContent=u.anac?'ANAC #'+u.anac:'';
+  document.getElementById('p-name').value=u.name||'';
+  document.getElementById('p-phone').value=u.phone||'';
+  document.getElementById('p-company').value=u.company||'';
+  const regs=[...new Set(state.appointments.map(a=>a.reg))];
+  document.getElementById('profile-aircraft').innerHTML=regs.length
+    ?regs.map(r=>{ const a=state.appointments.find(x=>x.reg===r); return `<div class="card" style="margin-bottom:8px"><div class="card-row"><div><div class="card-title">${r}</div><div class="card-sub">${a?.type||''} · ${a?.model||''}</div></div></div></div>`; }).join('')
+    :'<div class="card"><div style="font-size:13px;color:var(--steel-30)">Nenhuma aeronave registrada</div></div>';
+}
+function saveProfile(){
+  const name=document.getElementById('p-name').value.trim();
+  if(!name){ toast('Informe o nome'); return; }
+  state.user.name=name; state.user.phone=document.getElementById('p-phone').value; state.user.company=document.getElementById('p-company').value;
+  document.getElementById('profile-name').textContent=name;
+  document.getElementById('profile-avatar').textContent=getInitials(name);
+  document.getElementById('home-username').textContent=name.split(' ')[0];
+  toast('Perfil salvo com sucesso');
+}
+
+/* ══════════════════════════════════════════════════════════════
+   ADMIN
+══════════════════════════════════════════════════════════════ */
+function switchAdminTab(tab,btn){
+  state.adminTab=tab;
+  document.querySelectorAll('#screen-admin .itab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  renderAdminContent();
+}
+function renderAdminContent(){
+  const el=document.getElementById('admin-content');
+  const now=new Date();
+  if(state.adminTab==='agenda'){
+    const today=dateStr(new Date());
+    const todayApps=state.appointments.filter(a=>a.date===today);
+    el.innerHTML=`
+      <div class="slabel">Hoje — ${fmt(today)}</div>
+      ${todayApps.length?todayApps.map(a=>`<div class="card">
+        <div class="card-row">
+          <div>
+            <div class="card-title">${a.reg} · ${a.time}</div>
+            <div class="card-sub">${a.type} · ${a.fuel} · ${a.qty.toLocaleString('pt-BR')} L</div>
+            <div class="card-sub" style="margin-top:2px">👤 ${a.pilot||'—'} · 📍 ${a.location}</div>
+          </div>
+          <span class="badge ${BADGE_MAP[a.status]||'badge-mute'}">${a.status}</span>
+        </div>
+        <div class="divider"></div>
+        <div class="btn-row">
+          <button class="btn btn-ghost btn-sm" onclick="adminMarkDone('${a.id}')">✓ Concluir</button>
+          <button class="btn btn-danger btn-sm" onclick="adminCancelAppt('${a.id}')">Cancelar</button>
+        </div>
+      </div>`).join(''):'<div class="empty" style="padding:30px 0"><div class="empty-title">Sem agendamentos hoje</div></div>'}
+      <div class="slabel">Próximos dias</div>
+      ${state.appointments.filter(a=>a.date>today&&a.status!=='Cancelado').map(a=>`<div class="card">
+        <div class="card-row">
+          <div>
+            <div class="card-title">${a.reg} · ${fmt(a.date)} · ${a.time}</div>
+            <div class="card-sub">${a.type} · ${a.fuel} · ${a.qty.toLocaleString('pt-BR')} L · 📍 ${a.location}</div>
+          </div>
+          <span class="badge ${BADGE_MAP[a.status]||'badge-mute'}">${a.status}</span>
+        </div>
+      </div>`).join('')||'<div style="font-size:13px;color:var(--steel-30);padding:8px 0">Nenhum agendamento futuro</div>'}`;
+  }
+  else if(state.adminTab==='all'){
+    el.innerHTML=`<div class="slabel">Todos os agendamentos</div>
+      ${state.appointments.map(a=>`<div class="card">
+        <div class="card-row">
+          <div>
+            <div class="card-title">${a.reg} — ${a.pilot||'—'}</div>
+            <div class="card-sub">${fmt(a.date)} · ${a.time} · ${a.fuel} · ${a.qty.toLocaleString('pt-BR')} L</div>
+            <div class="card-sub" style="margin-top:2px">📍 ${a.location} · ${fmtCurrency(a.total)}</div>
+          </div>
+          <span class="badge ${BADGE_MAP[a.status]||'badge-mute'}">${a.status}</span>
+        </div>
+      </div>`).join('')||'<div class="empty"><div class="empty-title">Nenhum registro</div></div>'}`;
+  }
+  else if(state.adminTab==='stats'){
+    const total=state.appointments.length;
+    const confirmed=state.appointments.filter(a=>a.status==='Confirmado').length;
+    const done=state.appointments.filter(a=>a.status==='Concluído').length;
+    const cancelled=state.appointments.filter(a=>a.status==='Cancelado').length;
+    const revenue=state.appointments.filter(a=>a.status==='Concluído').reduce((acc,a)=>acc+a.total,0);
+    el.innerHTML=`
+      <div class="slabel">Visão geral</div>
+      <div class="statgrid">
+        <div class="statcard statcard-amber"><div class="stat-val">${total}</div><div class="stat-lbl">Total</div></div>
+        <div class="statcard statcard-ok"><div class="stat-val">${confirmed}</div><div class="stat-lbl">Confirmados</div></div>
+        <div class="statcard statcard-info"><div class="stat-val">${done}</div><div class="stat-lbl">Concluídos</div></div>
+        <div class="statcard statcard-err"><div class="stat-val">${cancelled}</div><div class="stat-lbl">Cancelados</div></div>
+      </div>
+      <div class="slabel">Receita (concluídos)</div>
+      <div class="card">
+        <div style="font-family:var(--fd);font-size:28px;font-weight:500;color:var(--amber)">${fmtCurrency(revenue)}</div>
+        <div style="font-size:12px;color:var(--steel-30);margin-top:4px">Baseado em ${done} abastecimento${done!==1?'s':''} concluído${done!==1?'s':''}</div>
+      </div>
+      <div class="slabel">Combustível mais solicitado</div>
+      <div class="card">
+        ${['QAV','AVGAS'].map(f=>{ const cnt=state.appointments.filter(a=>a.fuel===f).length; const pct=total?Math.round(cnt/total*100):0; return `<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;margin-bottom:5px"><span style="font-family:var(--fd);font-size:12px;color:var(--steel-10)">${f}</span><span style="font-family:var(--fd);font-size:12px;color:var(--steel-30)">${cnt} · ${pct}%</span></div><div style="height:3px;background:var(--ink-60);border-radius:2px"><div style="height:100%;width:${pct}%;background:var(--amber);border-radius:2px;transition:width .6s"></div></div></div>`; }).join('')}
+      </div>`;
+  }
+}
+function adminMarkDone(id){ state.appointments=state.appointments.map(a=>a.id===id?{...a,status:'Concluído'}:a); renderAdminContent(); toast('Agendamento marcado como concluído'); }
+function adminCancelAppt(id){ state.appointments=state.appointments.map(a=>a.id===id?{...a,status:'Cancelado'}:a); renderAdminContent(); toast('Agendamento cancelado'); }
+
+/* ══════════════════════════════════════════════════════════════
+   BOOT
+══════════════════════════════════════════════════════════════ */
+if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sw.js').catch(()=>{}); }
+setTimeout(()=>{ showScreen('login-select'); }, 1900);
+</script>
+</body>
+</html>
