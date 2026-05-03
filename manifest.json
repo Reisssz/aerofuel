@@ -2,7 +2,7 @@
   "name": "AeroFuel — Gestão de Abastecimento",
   "short_name": "AeroFuel",
   "description": "Sistema de agendamento de abastecimento de aeronaves",
-  "start_url": "/index.html",
+  "start_url": "/app.html",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#0A0C0F",
